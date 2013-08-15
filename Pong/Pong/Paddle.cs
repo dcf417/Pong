@@ -21,8 +21,7 @@ namespace Pong
         private Vector2 _position;
         private int _width;
         private int _height;
-        private float _speed;
-        private Vector2 _center;
+        private Vector2 _speed;
         private float _minY;
         private float _maxY;
         private Keys _upKey;
@@ -53,7 +52,7 @@ namespace Pong
         /// </summary>
         public override void Initialize()
         {
-            _speed = 0.5f;  
+            _speed = new Vector2(0, 0.5f);
 
             base.Initialize();
         }
@@ -63,7 +62,6 @@ namespace Pong
             _texture = Game.Content.Load<Texture2D>(@"Images\paddle");
             _width = _texture.Width;
             _height = _texture.Height;
-            _center = new Vector2(_width / 2, _height / 2);
 
             _textureData = new Color[_width * _height];
             _texture.GetData(_textureData);
@@ -83,11 +81,11 @@ namespace Pong
 
             if (Keyboard.GetState().IsKeyDown(_upKey))
             {
-                _position.Y -= _speed * timeLapse;
+                _position -= _speed * timeLapse;
             }
             else if (Keyboard.GetState().IsKeyDown(_downKey))
             {
-                _position.Y += _speed * timeLapse;
+                _position += _speed * timeLapse;
             }
 
             _position.Y = MathHelper.Clamp(_position.Y, _minY, _maxY);
@@ -98,7 +96,7 @@ namespace Pong
         public override void Draw(GameTime gameTime)
         {
             SpriteBatch sb = ((PongGame)Game).SpriteBatch;
-            sb.Draw(_texture, _position, null, Color.White, 0.0f, _center, 1.0f, SpriteEffects.None, 0.0f);
+            sb.Draw(_texture, _position, Color.White);
 
             base.Draw(gameTime);
         }
@@ -108,18 +106,11 @@ namespace Pong
             return new Rectangle((int)_position.X, (int)_position.Y, _width, _height);
         }
 
-        private Rectangle TitleSafeRegion(int spriteWidth, int spriteHeight)
-        {
-            // show entire region on the PC or Zune
-            return new Rectangle(0, 0, Game.Window.ClientBounds.Width,
-                                       Game.Window.ClientBounds.Height - spriteHeight - 5);
-        }
-
         private void SetBoundaries()
         {
             Rectangle playArea = ((PongGame)Game).Arena.GetPlayArea();
-            _minY = _height / 2 + playArea.Y + 5;
-            _maxY = playArea.Height - (_height / 2) - 5;
+            _minY = playArea.Y + 5;
+            _maxY = playArea.Height - _height - 5;
         }
     }
 }

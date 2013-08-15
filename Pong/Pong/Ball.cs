@@ -84,8 +84,7 @@ namespace Pong
         {
             float timeLapse = (float)gameTime.ElapsedGameTime.Milliseconds;
 
-            _position.X += _speed.X * timeLapse;
-            _position.Y += _speed.Y * timeLapse;
+            _position += _speed * timeLapse;
 
             _position.X = MathHelper.Clamp(_position.X, _minX, _maxX);
             _position.Y = MathHelper.Clamp(_position.Y, _minY, _maxY);
@@ -124,7 +123,7 @@ namespace Pong
         public override void Draw(GameTime gameTime)
         {
             SpriteBatch sb = ((PongGame)Game).SpriteBatch;
-            sb.Draw(_texture, _position, null, Color.White, 0.0f, _center, 1.0f, SpriteEffects.None, 0.0f);
+            sb.Draw(_texture, _position, Color.White);
 
             base.Draw(gameTime);
         }
@@ -137,14 +136,10 @@ namespace Pong
             for (int i = 0; i < paddles.Length; i++)
             {
                 if(DidPixelCollide(ballRectangle, TextureData, paddles[i].GetBoundingRectangle(), paddles[i].TextureData))
-                {    
+                {
+                    var paddleCollision = CheckCollision(ballRectangle, paddles[i].GetBoundingRectangle());
                     return true;
                 }
-                
-                //if(ballRectangle.Intersects(paddles[i].GetBoundingRectangle()))
-                //{
-                //    return true;
-                //}
             }
 
             return false;
@@ -158,11 +153,6 @@ namespace Pong
             {
                 return false;
             }
-
-            //int top = Math.Max(rectangleA.Top, rectangleB.Top);
-            //int bottom = Math.Min(rectangleA.Bottom, rectangleB.Bottom);
-            //int left = Math.Max(rectangleA.Left, rectangleB.Left);
-            //int right = Math.Min(rectangleA.Right, rectangleB.Right);
 
             int top = intersect.Top;
             int bottom = intersect.Bottom;
@@ -193,13 +183,32 @@ namespace Pong
             return false;
         }
 
+        private PaddleCollision CheckCollision(Rectangle ballRectangle, Rectangle paddleRectangle)
+        {
+            if (ballRectangle.Right >= paddleRectangle.Left)
+                return PaddleCollision.Left;
+            else
+                return PaddleCollision.None;
+
+            if (ballRectangle.Bottom >= paddleRectangle.Top)
+                return PaddleCollision.Top;
+            else if (ballRectangle.Top <= paddleRectangle.Bottom)
+                return PaddleCollision.Bottom;
+            else if (ballRectangle.Right >= paddleRectangle.Left)
+                return PaddleCollision.Left;
+            else if (ballRectangle.Left <= paddleRectangle.Right)
+                return PaddleCollision.Right;
+            else
+                return PaddleCollision.None;
+        }
+
         private void SetBoundaries()
         {
             Rectangle playArea = ((PongGame)Game).Arena.GetPlayArea();
             _minX = playArea.X - _width;
             _maxX = playArea.Width + _width;
-            _minY = playArea.Y + _height / 2;;
-            _maxY = playArea.Height - _height / 2;
+            _minY = playArea.Y;
+            _maxY = playArea.Height - _height;
         }
     }
 }

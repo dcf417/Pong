@@ -64,7 +64,7 @@ namespace Pong
 
             _paddles = new Paddle[2];
             _paddles[0] = new Paddle(this, new Vector2(20, Window.ClientBounds.Height / 2), Keys.W, Keys.S);
-            _paddles[1] = new Paddle(this, new Vector2(Window.ClientBounds.Width - 20, Window.ClientBounds.Height / 2), Keys.Up, Keys.Down);
+            _paddles[1] = new Paddle(this, new Vector2(Window.ClientBounds.Width - 40, Window.ClientBounds.Height / 2), Keys.Up, Keys.Down);
 
             _ball = new Ball(this);
 
