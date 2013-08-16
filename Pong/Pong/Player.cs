@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Pong
 {
-    public enum Players
+    public enum Player
     {
         One,
         Two

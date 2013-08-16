@@ -60,8 +60,8 @@ namespace Pong
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         public override void Update(GameTime gameTime)
         {
-            _playerOneScore = ((PongGame)Game).Scores[0];
-            _playerTwoScore = ((PongGame)Game).Scores[1];
+            _playerOneScore = ((PongGame)Game).ScoreKeeper.PlayerOneScore;
+            _playerTwoScore = ((PongGame)Game).ScoreKeeper.PlayerTwoScore;
 
             Vector2 fontVector = _spriteFont.MeasureString(_playerOneScore.ToString());
             _playerOneScorePos = new Vector2(Game.Window.ClientBounds.Width / 2 - 42 - fontVector.X, 40);
@@ -77,8 +77,20 @@ namespace Pong
             sb.Draw(_wall, _topWallPosition, null, Color.White);
             sb.Draw(_wall, _bottomWallPosition, null, Color.White);
 
-            sb.DrawString(_spriteFont, _playerOneScore.ToString(), _playerOneScorePos, Color.White);
-            sb.DrawString(_spriteFont, _playerTwoScore.ToString(), _playerTwoScorePos, Color.White);
+            if (!((PongGame)Game).GameInProgress)
+            {
+                ScoreKeeper scoreKeeper = ((PongGame)Game).ScoreKeeper;
+                string message = string.Format("{0} Wins!", scoreKeeper.GetWinner());
+                Vector2 fontVector = _spriteFont.MeasureString(message);
+                Vector2 messagePosition = new Vector2(Game.Window.ClientBounds.Width / 2 - fontVector.X / 2, 40);
+
+                sb.DrawString(_spriteFont, string.Format("{0} Wins!", scoreKeeper.GetWinner()), messagePosition, Color.White);
+            }
+            else
+            {
+                sb.DrawString(_spriteFont, _playerOneScore.ToString(), _playerOneScorePos, Color.White);
+                sb.DrawString(_spriteFont, _playerTwoScore.ToString(), _playerTwoScorePos, Color.White);
+            }
 
             base.Draw(gameTime);
         }

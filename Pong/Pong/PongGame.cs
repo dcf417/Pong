@@ -18,7 +18,7 @@ namespace Pong
     {
         GraphicsDeviceManager _graphics;
         SpriteBatch _spriteBatch;
-        int[] _scores;
+        ScoreKeeper _scoreKeeper;
         Paddle[] _paddles;
         Ball _ball;
         Arena _arena;
@@ -41,14 +41,19 @@ namespace Pong
             get { return _paddles; }
         }
 
-        public int[] Scores
-        {
-            get { return _scores; }
-        }
-
         public Arena Arena
         {
             get { return _arena; }
+        }
+
+        public ScoreKeeper ScoreKeeper
+        {
+            get { return _scoreKeeper; }
+        }
+
+        public bool GameInProgress
+        {
+            get { return _scoreKeeper.KeepPlaying; }
         }
 
         /// <summary>
@@ -59,7 +64,8 @@ namespace Pong
         /// </summary>
         protected override void Initialize()
         {
-            _scores = new int[2];
+            _scoreKeeper = new ScoreKeeper(this);
+
             _arena = new Arena(this);
 
             _paddles = new Paddle[2];

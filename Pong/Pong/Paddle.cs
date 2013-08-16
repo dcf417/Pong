@@ -77,6 +77,9 @@ namespace Pong
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         public override void Update(GameTime gameTime)
         {
+            if (!((PongGame)Game).GameInProgress)
+                return;
+
             float timeLapse = (float)gameTime.ElapsedGameTime.Milliseconds;
 
             if (Keyboard.GetState().IsKeyDown(_upKey))

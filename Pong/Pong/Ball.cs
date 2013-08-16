@@ -29,7 +29,6 @@ namespace Pong
         private int _minX;
         private int _maxX;
         private SoundEffect _bounce;
-        private SoundEffect _score;
         private Color[] _textureData;
 
         public Ball(Game game)
@@ -61,8 +60,7 @@ namespace Pong
         protected override void LoadContent()
         {
             _bounce = Game.Content.Load<SoundEffect>(@"Sounds\bounce");
-            _score = Game.Content.Load<SoundEffect>(@"Sounds\score");
-
+            
             _texture = Game.Content.Load<Texture2D>(@"Images\ball");
             _width = _texture.Width;
             _height = _texture.Height;
@@ -82,6 +80,9 @@ namespace Pong
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         public override void Update(GameTime gameTime)
         {
+            if (!((PongGame)Game).GameInProgress)
+                return;
+
             float timeLapse = (float)gameTime.ElapsedGameTime.Milliseconds;
 
             _position += _speed * timeLapse;
@@ -97,16 +98,14 @@ namespace Pong
 
             if (_position.X == _minX)
             {
-                _score.Play();
-                ((PongGame)Game).Scores[(int) Players.Two]++;
+                ((PongGame)Game).ScoreKeeper.Score(Player.Two);
                 _position = _startPosition;
                 _speed.X *= -1;
             }
 
             if (_position.X == _maxX)
             {
-                _score.Play();
-                ((PongGame)Game).Scores[(int)Players.One]++;
+                ((PongGame)Game).ScoreKeeper.Score(Player.One);
                 _position = _startPosition;
                 _speed.X *= -1;
             }
@@ -159,8 +158,6 @@ namespace Pong
 
         private bool DidPixelCollide(Rectangle rectangleA, Color[] dataA, Rectangle rectangleB, Color[] dataB, Rectangle intersect)
         {
-            var paddleCollision = GetCollisionDirection(intersect, rectangleB);
-
             int top = intersect.Top;
             int bottom = intersect.Bottom;
             int left = intersect.Left;
