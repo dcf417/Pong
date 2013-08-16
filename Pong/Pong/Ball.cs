@@ -111,10 +111,21 @@ namespace Pong
                 _speed.X *= -1;
             }
 
-            if (DidHitPaddle())
+            PaddleCollision collision = DidHitPaddle();
+            switch (collision)
             {
-                _bounce.Play();
-                _speed.X *= -1;
+                case PaddleCollision.Left:
+                case PaddleCollision.Right:
+                    _bounce.Play();
+                    _speed.X *= -1;
+                    break;
+                case PaddleCollision.Top:
+                case PaddleCollision.Bottom:
+                    _bounce.Play();
+                    _speed.Y *= -1;
+                    break;
+                default:
+                    break;
             }
             
             base.Update(gameTime);
@@ -128,31 +139,27 @@ namespace Pong
             base.Draw(gameTime);
         }
 
-        private bool DidHitPaddle()
+        private PaddleCollision DidHitPaddle()
         {
             Paddle[] paddles = ((PongGame)Game).Paddles;
             Rectangle ballRectangle = new Rectangle((int)_position.X, (int)_position.Y, _width, _height);
 
             for (int i = 0; i < paddles.Length; i++)
             {
-                if(DidPixelCollide(ballRectangle, TextureData, paddles[i].GetBoundingRectangle(), paddles[i].TextureData))
-                {
-                    var paddleCollision = CheckCollision(ballRectangle, paddles[i].GetBoundingRectangle());
-                    return true;
-                }
+                var paddleRectangle = paddles[i].GetBoundingRectangle();
+                var intersect = Rectangle.Intersect(ballRectangle, paddleRectangle);
+
+                if (intersect != Rectangle.Empty)
+                    if (DidPixelCollide(ballRectangle, TextureData, paddleRectangle, paddles[i].TextureData, intersect))
+                        return GetCollisionDirection(intersect, paddleRectangle);
             }
 
-            return false;
+            return PaddleCollision.None;
         }
 
-        private bool DidPixelCollide(Rectangle rectangleA, Color[] dataA, Rectangle rectangleB, Color[] dataB)
+        private bool DidPixelCollide(Rectangle rectangleA, Color[] dataA, Rectangle rectangleB, Color[] dataB, Rectangle intersect)
         {
-            Rectangle intersect = Rectangle.Intersect(rectangleA, rectangleB);
-
-            if (intersect == Rectangle.Empty)
-            {
-                return false;
-            }
+            var paddleCollision = GetCollisionDirection(intersect, rectangleB);
 
             int top = intersect.Top;
             int bottom = intersect.Bottom;
@@ -183,23 +190,31 @@ namespace Pong
             return false;
         }
 
-        private PaddleCollision CheckCollision(Rectangle ballRectangle, Rectangle paddleRectangle)
+        private PaddleCollision GetCollisionDirection(Rectangle intersection, Rectangle paddleRectangle)
         {
-            if (ballRectangle.Right >= paddleRectangle.Left)
-                return PaddleCollision.Left;
+            if (_speed.X > 0)
+            {
+                if (intersection.X >= paddleRectangle.Left)
+                    return PaddleCollision.Left;
+            }
             else
-                return PaddleCollision.None;
+            {
+                if (intersection.X <= paddleRectangle.Right)
+                    return PaddleCollision.Right;
+            }
 
-            if (ballRectangle.Bottom >= paddleRectangle.Top)
-                return PaddleCollision.Top;
-            else if (ballRectangle.Top <= paddleRectangle.Bottom)
-                return PaddleCollision.Bottom;
-            else if (ballRectangle.Right >= paddleRectangle.Left)
-                return PaddleCollision.Left;
-            else if (ballRectangle.Left <= paddleRectangle.Right)
-                return PaddleCollision.Right;
+            if (_speed.Y > 0)
+            {
+                if (intersection.Y >= paddleRectangle.Top)
+                    return PaddleCollision.Top;
+            }
             else
-                return PaddleCollision.None;
+            {
+                if (intersection.Y <= paddleRectangle.Bottom)
+                    return PaddleCollision.Bottom;
+            }
+
+            return PaddleCollision.None;
         }
 
         private void SetBoundaries()
