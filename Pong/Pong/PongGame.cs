@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using Pong.Managers;
 
 namespace Pong
 {
@@ -22,6 +23,7 @@ namespace Pong
         Paddle[] _paddles;
         Ball _ball;
         Arena _arena;
+        InputManager _inputManager;
 
         public PongGame()
         {
@@ -51,6 +53,11 @@ namespace Pong
             get { return _scoreKeeper; }
         }
 
+        public InputManager InputManager
+        {
+            get { return _inputManager; }
+        }
+
         public bool GameInProgress
         {
             get { return _scoreKeeper.KeepPlaying; }
@@ -65,12 +72,13 @@ namespace Pong
         protected override void Initialize()
         {
             _scoreKeeper = new ScoreKeeper(this);
+            _inputManager = new InputManager(this);
 
             _arena = new Arena(this);
 
             _paddles = new Paddle[2];
-            _paddles[0] = new Paddle(this, new Vector2(20, Window.ClientBounds.Height / 2), Keys.W, Keys.S);
-            _paddles[1] = new Paddle(this, new Vector2(Window.ClientBounds.Width - 40, Window.ClientBounds.Height / 2), Keys.Up, Keys.Down);
+            _paddles[0] = new Paddle(this, new Vector2(20, Window.ClientBounds.Height / 2), Player.One);
+            _paddles[1] = new Paddle(this, new Vector2(Window.ClientBounds.Width - 40, Window.ClientBounds.Height / 2), Player.Two);
 
             _ball = new Ball(this);
 

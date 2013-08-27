@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using Pong.Managers;
 
 
 namespace Pong
@@ -24,16 +25,14 @@ namespace Pong
         private Vector2 _speed;
         private float _minY;
         private float _maxY;
-        private Keys _upKey;
-        private Keys _downKey;
         private Color[] _textureData;
+        private Player _player;
 
-        public Paddle(Game game, Vector2 position, Keys upKey, Keys downKey)
+        public Paddle(Game game, Vector2 position, Player player)
             : base(game)
         {
             _position = position;
-            _upKey = upKey;
-            _downKey = downKey;
+            _player = player;
 
             Game.Components.Add(this);
         }
@@ -78,15 +77,16 @@ namespace Pong
         public override void Update(GameTime gameTime)
         {
             if (!((PongGame)Game).GameInProgress)
-                return;
+                return;        
 
             float timeLapse = (float)gameTime.ElapsedGameTime.Milliseconds;
+            MoveState move = ((PongGame)Game).InputManager.GetPlayerMove(_player);
 
-            if (Keyboard.GetState().IsKeyDown(_upKey))
+            if (move == MoveState.Up)
             {
                 _position -= _speed * timeLapse;
             }
-            else if (Keyboard.GetState().IsKeyDown(_downKey))
+            else if (move == MoveState.Down)
             {
                 _position += _speed * timeLapse;
             }
