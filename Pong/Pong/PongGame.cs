@@ -23,7 +23,6 @@ namespace Pong
         Paddle[] _paddles;
         Ball _ball;
         Arena _arena;
-        InputManager _inputManager;
 
         public PongGame()
         {
@@ -31,6 +30,8 @@ namespace Pong
             _graphics.PreferredBackBufferHeight = 800;
             _graphics.PreferredBackBufferWidth = 1200;
             Content.RootDirectory = "Content";
+
+            Services.AddService(typeof(IInputManager), new InputManager(this));
         }
 
         public SpriteBatch SpriteBatch
@@ -53,11 +54,6 @@ namespace Pong
             get { return _scoreKeeper; }
         }
 
-        public InputManager InputManager
-        {
-            get { return _inputManager; }
-        }
-
         public bool GameInProgress
         {
             get { return _scoreKeeper.KeepPlaying; }
@@ -72,7 +68,6 @@ namespace Pong
         protected override void Initialize()
         {
             _scoreKeeper = new ScoreKeeper(this);
-            _inputManager = new InputManager(this);
 
             _arena = new Arena(this);
 

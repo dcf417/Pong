@@ -27,6 +27,7 @@ namespace Pong
         private float _maxY;
         private Color[] _textureData;
         private Player _player;
+        private IInputManager _inputManager;
 
         public Paddle(Game game, Vector2 position, Player player)
             : base(game)
@@ -52,6 +53,7 @@ namespace Pong
         public override void Initialize()
         {
             _speed = new Vector2(0, 0.5f);
+            _inputManager = Game.Services.GetService(typeof(IInputManager)) as IInputManager;
 
             base.Initialize();
         }
@@ -80,7 +82,7 @@ namespace Pong
                 return;        
 
             float timeLapse = (float)gameTime.ElapsedGameTime.Milliseconds;
-            MoveState move = ((PongGame)Game).InputManager.GetPlayerMove(_player);
+            MoveState move = _inputManager.GetPlayerMove(_player);
 
             if (move == MoveState.Up)
             {

@@ -7,7 +7,12 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Pong.Managers
 {
-    public class InputManager : GameComponent
+    public interface IInputManager
+    {
+        MoveState GetPlayerMove(Player player);
+    }
+
+    public class InputManager : GameComponent, IInputManager
     {
         private static readonly Keys _playerOneUp = Keys.W;
         private static readonly Keys _playerOneDown = Keys.S;
@@ -61,12 +66,5 @@ namespace Pong.Managers
         {
             return _playerMovement[player];
         }
-    }
-
-    public enum MoveState
-    {
-        Up,
-        Down,
-        None
     }
 }

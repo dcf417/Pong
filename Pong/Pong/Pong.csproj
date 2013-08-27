@@ -110,6 +110,7 @@
     <Compile Include="Arena.cs" />
     <Compile Include="Ball.cs" />
     <Compile Include="Managers\InputManager.cs" />
+    <Compile Include="Managers\MoveState.cs" />
     <Compile Include="Paddle.cs" />
     <Compile Include="PaddleCollision.cs" />
     <Compile Include="Player.cs" />
