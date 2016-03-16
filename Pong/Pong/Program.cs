@@ -1,5 +1,3 @@
-using System;
-
 namespace Pong
 {
 #if WINDOWS || XBOX
